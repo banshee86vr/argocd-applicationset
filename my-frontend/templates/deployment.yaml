@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-frontend.fullname" . }}
+  labels:
+    {{- include "my-frontend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "my-frontend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "my-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: FRONTEND_TITLE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.frontend.titleConfigMapName }}
+                  key: title
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- include "my-frontend.livenessProbe" . | nindent 12 }}
+          readinessProbe:
+            {{- include "my-frontend.readinessProbe" . | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.frontend.titleConfigMapName }}

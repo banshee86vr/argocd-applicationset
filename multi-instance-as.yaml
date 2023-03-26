@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: multi-instance-app-as
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/banshee86vr/argocd-applicationset.git
+        revision: HEAD
+        files:
+          - path: "customers/dev/**.json"
+  template:
+    spec:
+      source:
+        repoURL: https://github.com/banshee86vr/argocd-applicationset.git
+        targetRevision: HEAD
+        path: multi-instance-app
+        helm:
+          valueFiles:
+            - values.yaml
+          values: |
+            title: "{{ title }}"
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: multi-instance-app
+      syncPolicy:
+        automated:
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - Prune=true
+          - Validate=true
+          - Timeout=10m
+          - retries=3
+          - RetryBackoff=5000
+          - SkipHooks=".*"
+          - SkipApplyOnPrune=true
+          - Replace=true
+      project: multi-instance-app
+    metadata:
+      name: "{{title}}"

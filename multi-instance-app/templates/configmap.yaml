@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.title }}-config
+data:
+  index.html: |
+    <html>
+      <head>
+        <title>{{ .Values.title }}</title>
+      </head>
+      <body>
+        <h1>{{ .Values.title }} Homepage</h1>
+        <p>Welcome to the {{ .Values.title }} homepage!</p>
+      </body>
+    </html>

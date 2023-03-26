@@ -1,4 +1,6 @@
-# Default values for my-frontend.
+title: multi-instance-app
+
+# Default values for ..
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -80,6 +82,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-frontend:
-  titleConfigMapName: my-frontend-title
